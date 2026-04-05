@@ -1,0 +1,43 @@
+INFO:     Started server process [24804]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+Checking for docs path: ../docs
+Current working directory: C:\Users\edgen\OneDrive - edgenet.com.au\Documents\Programming\DeepLearningAI\starting-ragchatbot-codebase-main\backend
+Docs path exists: True
+Loading initial documents...
+Course already exists: Building Towards Computer Use with Anthropic - skipping
+Course already exists: MCP: Build Rich-Context AI Apps with Anthropic - skipping
+Course already exists: Advanced Retrieval for AI with Chroma - skipping
+Course already exists: Prompt Compression and Query Optimization - skipping
+Loaded 0 courses with 0 chunks
+INFO:     127.0.0.1:58258 - "GET /api/courses HTTP/1.1" 200 OK
+DEBUG search_tools.py - Created source: {'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}
+DEBUG search_tools.py - Created source: {'text': 'Advanced Retrieval for AI with Chroma - Lesson 0', 'url': 'https://learn.deeplearning.ai/courses/advanced-retrieval-for-ai/lesson/kb5oj/introduction'}
+DEBUG search_tools.py - Created source: {'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}
+DEBUG search_tools.py - Created source: {'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}
+DEBUG search_tools.py - Created source: {'text': 'Advanced Retrieval for AI with Chroma - Lesson 0', 'url': 'https://learn.deeplearning.ai/courses/advanced-retrieval-for-ai/lesson/kb5oj/introduction'}
+DEBUG search_tools.py - Total sources created: 5
+DEBUG search_tools.py - All sources: [{'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}, {'text': 'Advanced Retrieval for AI with Chroma - Lesson 0', 'url': 'https://learn.deeplearning.ai/courses/advanced-retrieval-for-ai/lesson/kb5oj/introduction'}, {'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}, {'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}, {'text': 'Advanced Retrieval for AI with Chroma - Lesson 0', 'url': 'https://learn.deeplearning.ai/courses/advanced-retrieval-for-ai/lesson/kb5oj/introduction'}]
+DEBUG rag_system.py - Sources retrieved: [{'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}, {'text': 'Advanced Retrieval for AI with Chroma - Lesson 0', 'url': 'https://learn.deeplearning.ai/courses/advanced-retrieval-for-ai/lesson/kb5oj/introduction'}, {'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}, {'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}, {'text': 'Advanced Retrieval for AI with Chroma - Lesson 0', 'url': 'https://learn.deeplearning.ai/courses/advanced-retrieval-for-ai/lesson/kb5oj/introduction'}]
+DEBUG rag_system.py - Sources type: <class 'list'>
+DEBUG rag_system.py - First source: {'text': 'Prompt Compression and Query Optimization - Lesson 1', 'url': 'https://learn.deeplearning.ai/courses/prompt-compression-and-query-optimization/lesson/y8g9n/vanilla-vector-search'}
+DEBUG rag_system.py - First source type: <class 'dict'>
+INFO:     127.0.0.1:58286 - "POST /api/query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58035 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58035 - "GET /style.css?v=12 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61410 - "GET /script.js?v=12 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61410 - "GET /api/courses HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61410 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58035 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51154 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51154 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60623 - "POST /api/query HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:54593 - "POST /api/query HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:57987 - "POST /api/query HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:50472 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50472 - "GET /style.css?v=12 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50472 - "GET /script.js?v=12 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50472 - "GET /api/courses HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50472 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57220 - "POST /api/query HTTP/1.1" 500 Internal Server Error
