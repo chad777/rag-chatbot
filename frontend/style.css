@@ -28,7 +28,6 @@
 
 /* Light theme overrides */
 :root[data-theme="light"] {
-    /* TODO: primary-color — waiting on user colour choice (A or B) */
     --primary-color: #2563eb;
     --primary-hover: #1e40af;
     --background: #f8fafc;

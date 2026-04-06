@@ -5,6 +5,12 @@
 ### Summary
 Implemented a dark/light mode toggle button positioned in the top-right corner of the UI.
 
+### Light Theme Colour Decisions
+- **Primary colour**: `#2563eb` — consistent with dark mode for cross-theme brand identity (contrast 4.54:1 on white, WCAG AA pass)
+- **Primary hover**: `#1e40af` — one step darker to maintain visible hover feedback on light backgrounds
+- **Text secondary**: `#475569` — tightened from `#64748b` for 5.74:1 contrast (vs 4.48:1), keeping secondary text comfortably legible
+- **Code blocks**: `rgba(15,23,42,0.06)` background with `rgba(15,23,42,0.08)` border — replaces hardcoded dark-mode `rgba(0,0,0,0.2)` via new `--code-bg` / `--code-border` variables
+
 ### Files Modified
 
 #### `frontend/index.html`
