@@ -5,7 +5,62 @@ const API_URL = '/api';
 let currentSessionId = null;
 
 // DOM elements
-let chatMessages, chatInput, sendButton, totalCourses, courseTitles;
+let chatMessages, chatInput, sendButton, totalCourses, courseTitles, themeToggle;
+
+// ── Theme ─────────────────────────────────────────
+
+/**
+ * Apply a theme ('dark' | 'light') to the document.
+ * Updates the data-theme attribute, persists the choice,
+ * and keeps the toggle button's aria-label in sync.
+ */
+function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme === 'light' ? 'light' : '';
+    localStorage.setItem('theme', theme);
+    if (themeToggle) {
+        themeToggle.setAttribute(
+            'aria-label',
+            theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
+        );
+    }
+}
+
+/**
+ * Toggle between dark and light, wrapping the switch in a
+ * short-lived transition class so colors animate smoothly.
+ */
+function toggleTheme() {
+    const current = localStorage.getItem('theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+
+    document.body.classList.add('theme-transition');
+    applyTheme(next);
+    setTimeout(() => document.body.classList.remove('theme-transition'), 350);
+}
+
+/**
+ * TODO: Implement theme initialisation.
+ *
+ * Decide how the app should pick a theme on first load.
+ * Two valid approaches — choose one (or combine them):
+ *
+ * Option A — Always default to dark (matches the current design):
+ *   const saved = localStorage.getItem('theme') || 'dark';
+ *   applyTheme(saved);
+ *
+ * Option B — Respect the visitor's OS preference on first visit,
+ *            then remember any manual override:
+ *   const systemPrefers = window.matchMedia('(prefers-color-scheme: light)').matches
+ *       ? 'light' : 'dark';
+ *   const saved = localStorage.getItem('theme') || systemPrefers;
+ *   applyTheme(saved);
+ *
+ * Add your 2–3 lines here:
+ */
+function initTheme() {
+    const saved = localStorage.getItem('theme') || 'dark';
+    applyTheme(saved);
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,7 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
     sendButton = document.getElementById('sendButton');
     totalCourses = document.getElementById('totalCourses');
     courseTitles = document.getElementById('courseTitles');
-    
+    themeToggle = document.getElementById('themeToggle');
+
+    initTheme();
     setupEventListeners();
     createNewSession();
     loadCourseStats();
@@ -23,6 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event Listeners
 function setupEventListeners() {
+    // Theme toggle
+    themeToggle.addEventListener('click', toggleTheme);
+
     // Chat functionality
     sendButton.addEventListener('click', sendMessage);
     chatInput.addEventListener('keypress', (e) => {
