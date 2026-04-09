@@ -6,6 +6,12 @@ let currentSessionId = null;
 
 // DOM elements
 let chatMessages, chatInput, sendButton, totalCourses, courseTitles, themeToggle;
+let attachButton, imageInput, imagePreviewContainer, imagePreview, imageRemoveBtn;
+let newChatBtn;
+
+// Selected image state
+let selectedImageData = null;
+let selectedImageMediaType = null;
 
 // ── Theme ─────────────────────────────────────────
 
@@ -71,6 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
     totalCourses = document.getElementById('totalCourses');
     courseTitles = document.getElementById('courseTitles');
     themeToggle = document.getElementById('themeToggle');
+    attachButton = document.getElementById('attachButton');
+    imageInput = document.getElementById('imageInput');
+    imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    imagePreview = document.getElementById('imagePreview');
+    imageRemoveBtn = document.getElementById('imageRemoveBtn');
+    newChatBtn = document.getElementById('newChatBtn');
 
     initTheme();
     setupEventListeners();
@@ -80,8 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event Listeners
 function setupEventListeners() {
+    // New chat
+    newChatBtn.addEventListener('click', startNewChat);
+
     // Theme toggle
     themeToggle.addEventListener('click', toggleTheme);
+
+    // Image attach
+    attachButton.addEventListener('click', () => imageInput.click());
+    imageInput.addEventListener('change', handleImageSelect);
+    imageRemoveBtn.addEventListener('click', clearSelectedImage);
 
     // Chat functionality
     sendButton.addEventListener('click', sendMessage);
@@ -101,18 +121,52 @@ function setupEventListeners() {
 }
 
 
+// Image handling
+function handleImageSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    selectedImageMediaType = file.type;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        // Strip the "data:image/...;base64," prefix — API wants raw base64
+        selectedImageData = ev.target.result.split(',')[1];
+        imagePreview.src = ev.target.result;
+        imagePreviewContainer.style.display = 'block';
+        attachButton.classList.add('has-image');
+    };
+    reader.readAsDataURL(file);
+    // Reset so the same file can be re-selected
+    imageInput.value = '';
+}
+
+function clearSelectedImage() {
+    selectedImageData = null;
+    selectedImageMediaType = null;
+    imagePreview.src = '';
+    imagePreviewContainer.style.display = 'none';
+    attachButton.classList.remove('has-image');
+}
+
 // Chat Functions
 async function sendMessage() {
     const query = chatInput.value.trim();
-    if (!query) return;
+    if (!query && !selectedImageData) return;
+
+    // Capture and clear image before disabling UI
+    const imageDataToSend = selectedImageData;
+    const imageMediaTypeToSend = selectedImageMediaType;
+    const imageSrcForDisplay = imagePreview.src;
+    if (imageDataToSend) clearSelectedImage();
 
     // Disable input
     chatInput.value = '';
     chatInput.disabled = true;
     sendButton.disabled = true;
+    attachButton.disabled = true;
 
-    // Add user message
-    addMessage(query, 'user');
+    // Add user message (with image if present)
+    addMessage(query || '(image)', 'user', null, false, imageDataToSend ? imageSrcForDisplay : null);
 
     // Add loading message - create a unique container for it
     const loadingMessage = createLoadingMessage();
@@ -126,8 +180,10 @@ async function sendMessage() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                query: query,
-                session_id: currentSessionId
+                query: query || '(image)',
+                session_id: currentSessionId,
+                image_data: imageDataToSend || null,
+                image_media_type: imageMediaTypeToSend || null,
             })
         });
 
@@ -160,6 +216,7 @@ async function sendMessage() {
     } finally {
         chatInput.disabled = false;
         sendButton.disabled = false;
+        attachButton.disabled = false;
         chatInput.focus();
     }
 }
@@ -179,7 +236,7 @@ function createLoadingMessage() {
     return messageDiv;
 }
 
-function addMessage(content, type, sources = null, isWelcome = false) {
+function addMessage(content, type, sources = null, isWelcome = false, imageSrc = null) {
     const messageId = Date.now();
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}${isWelcome ? ' welcome-message' : ''}`;
@@ -195,35 +252,40 @@ function addMessage(content, type, sources = null, isWelcome = false) {
     // Convert markdown to HTML for assistant messages
     const displayContent = type === 'assistant' ? marked.parse(content) : escapeHtml(content);
 
-    let html = `<div class="message-content">${displayContent}</div>`;
+    const imageHtml = imageSrc
+        ? `<img class="chat-image" src="${escapeHtml(imageSrc)}" alt="Attached image">`
+        : '';
+
+    let html = `<div class="message-content">${imageHtml}${displayContent}</div>`;
 
     if (sources && sources.length > 0) {
-        // Format sources with clickable links where available
-        const formattedSources = sources.map(source => {
-            console.log("Processing source:", source);
+        const sourceItems = sources.map(source => {
             if (typeof source === 'object' && source.text) {
-                // Source object with text and optional URL
                 if (source.url) {
-                    const linkHtml = `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.text)}</a>`;
-                    console.log("Created link HTML:", linkHtml);
-                    return linkHtml;
+                    return `<li class="source-item">
+                        <a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">
+                            <svg class="source-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            <span>${escapeHtml(source.text)}</span>
+                        </a>
+                    </li>`;
                 } else {
-                    console.log("No URL for source");
-                    return escapeHtml(source.text);
+                    return `<li class="source-item source-item--no-link">
+                        <svg class="source-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>${escapeHtml(source.text)}</span>
+                    </li>`;
                 }
             } else {
-                // Legacy plain string support
-                console.log("Source is string, not object");
-                return escapeHtml(source);
+                return `<li class="source-item source-item--no-link"><span>${escapeHtml(source)}</span></li>`;
             }
-        }).join(', ');
-
-        console.log("Final formatted sources HTML:", formattedSources);
+        }).join('');
 
         html += `
             <details class="sources-collapsible">
-                <summary class="sources-header">Sources</summary>
-                <div class="sources-content">${formattedSources}</div>
+                <summary class="sources-header">
+                    <svg class="sources-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    Sources <span class="sources-count">${sources.length}</span>
+                </summary>
+                <ul class="sources-list">${sourceItems}</ul>
             </details>
         `;
     }
@@ -243,6 +305,18 @@ function escapeHtml(text) {
 }
 
 // Removed removeMessage function - no longer needed since we handle loading differently
+
+async function startNewChat() {
+    if (currentSessionId) {
+        try {
+            await fetch(`${API_URL}/session/${currentSessionId}`, { method: 'DELETE' });
+        } catch (e) {
+            console.warn('Could not clear session on backend:', e);
+        }
+    }
+    createNewSession();
+    clearSelectedImage();
+}
 
 async function createNewSession() {
     currentSessionId = null;

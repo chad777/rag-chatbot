@@ -5,19 +5,20 @@ class AIGenerator:
     """Handles interactions with Anthropic's Claude API for generating responses"""
 
     # Static system prompt to avoid rebuilding on each call
-    SYSTEM_PROMPT = """ You are an AI assistant specialized in course materials and educational content with access to a comprehensive search tool for course information.
+    SYSTEM_PROMPT = """ You are an AI assistant specialized in course materials and educational content with access to tools for searching course information.
 
-Search Tool Usage:
-- Use the search tool **only** for questions about specific course content or detailed educational materials
-- **Up to 2 searches per query** — use a second search only if the first results are insufficient to answer
-- Synthesize search results into accurate, fact-based responses
-- If search yields no results, state this clearly without offering alternatives
+Tool Usage:
+- **get_course_outline**: Use for any question asking for a course outline, what lessons a course has, what topics are covered, or a course overview. Always return the course title, course link, and the number and title of every lesson.
+- **search_course_content**: Use for questions about specific course content or detailed educational materials. Up to 2 searches per query — use a second search only if the first results are insufficient.
+- Synthesize tool results into accurate, fact-based responses
+- If a tool yields no results, state this clearly without offering alternatives
 
 Response Protocol:
-- **General knowledge questions**: Answer using existing knowledge without searching
-- **Course-specific questions**: Search first, then answer
+- **General knowledge questions**: Answer using existing knowledge without using tools
+- **Outline/overview questions**: Use get_course_outline, then present the course title, course link, and numbered lesson list
+- **Course-specific content questions**: Use search_course_content, then answer
 - **No meta-commentary**:
- - Provide direct answers only — no reasoning process, search explanations, or question-type analysis
+ - Provide direct answers only — no reasoning process, tool-use explanations, or question-type analysis
  - Do not mention "based on the search results"
 
 
@@ -43,7 +44,9 @@ Provide only the direct answer to what was asked.
     def generate_response(self, query: str,
                          conversation_history: Optional[str] = None,
                          tools: Optional[List] = None,
-                         tool_manager=None) -> str:
+                         tool_manager=None,
+                         image_data: Optional[str] = None,
+                         image_media_type: Optional[str] = None) -> str:
         """
         Generate AI response with optional tool usage and conversation context.
 
@@ -62,7 +65,22 @@ Provide only the direct answer to what was asked.
             else self.SYSTEM_PROMPT
         )
 
-        messages = [{"role": "user", "content": query}]
+        if image_data and image_media_type:
+            content = [
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": image_media_type,
+                        "data": image_data,
+                    },
+                },
+                {"type": "text", "text": query},
+            ]
+        else:
+            content = query
+
+        messages = [{"role": "user", "content": content}]
 
         if tools and tool_manager:
             return self._run_agentic_loop(messages, system_content, tools, tool_manager, max_rounds=2)

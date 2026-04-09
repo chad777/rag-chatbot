@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Course Materials Assistant</title>
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
     <div class="container">
@@ -19,6 +19,11 @@
         <div class="main-content">
             <!-- Left Sidebar -->
             <aside class="sidebar">
+                <!-- New Chat -->
+                <div class="sidebar-section">
+                    <button class="new-chat-btn" id="newChatBtn">+ New Chat</button>
+                </div>
+
                 <!-- Course Stats -->
                 <div class="sidebar-section">
                     <details class="stats-collapsible">
@@ -55,7 +60,19 @@
             <main class="chat-main">
                 <div class="chat-container">
                     <div id="chatMessages" class="chat-messages"></div>
+                    <div class="image-preview-container" id="imagePreviewContainer" style="display:none;">
+                        <div class="image-preview-wrapper">
+                            <img id="imagePreview" src="" alt="Selected image">
+                            <button class="image-remove-btn" id="imageRemoveBtn" aria-label="Remove image">✕</button>
+                        </div>
+                    </div>
                     <div class="chat-input-container">
+                        <input type="file" id="imageInput" accept="image/*" style="display:none;">
+                        <button id="attachButton" aria-label="Attach image" title="Attach image">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                            </svg>
+                        </button>
                         <input
                             type="text"
                             id="chatInput"
@@ -99,7 +116,7 @@
         </svg>
     </button>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="script.js?v=13"></script>
+    <script src="marked.min.js"></script>
+    <script src="script.js?v=14"></script>
 </body>
 </html>

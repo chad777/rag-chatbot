@@ -248,29 +248,121 @@ header h1 {
 
 /* Collapsible Sources */
 .sources-collapsible {
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
 }
 
 .sources-collapsible summary {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
     user-select: none;
-    font-weight: 500;
+    list-style: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.25rem 0;
+    width: fit-content;
+    transition: color 0.15s ease;
 }
+
+.sources-collapsible summary::-webkit-details-marker { display: none; }
 
 .sources-collapsible summary:hover {
     color: var(--text-primary);
 }
 
-.sources-collapsible[open] summary {
-    margin-bottom: 0.25rem;
+.sources-chevron {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
 }
 
-.sources-content {
-    padding: 0 0.5rem 0.25rem 1.5rem;
+.sources-collapsible[open] .sources-chevron {
+    transform: rotate(90deg);
+}
+
+.sources-count {
+    background: var(--border-color);
     color: var(--text-secondary);
+    border-radius: 999px;
+    padding: 0 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.sources-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.source-item {
+    display: flex;
+}
+
+.source-item a,
+.source-item.source-item--no-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    background: rgba(96, 165, 250, 0.08);
+    color: #60a5fa;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-word;
+    transition: color 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.source-item.source-item--no-link {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+    background: transparent;
+    cursor: default;
+}
+
+.source-item a:hover {
+    color: #93c5fd;
+    background: rgba(96, 165, 250, 0.15);
+    border-color: rgba(96, 165, 250, 0.55);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(96, 165, 250, 0.15);
+}
+
+.source-item a:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.source-item a:focus-visible {
+    outline: none;
+    color: #93c5fd;
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+}
+
+.source-icon {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    opacity: 0.8;
 }
 
 /* Markdown formatting styles */
@@ -664,6 +756,34 @@ details[open] .suggested-header::before {
     transform: translateX(2px);
 }
 
+/* New Chat Button */
+.new-chat-btn {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem 0;
+    border: none;
+    background: none;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+    text-align: left;
+    transition: color 0.2s ease;
+}
+
+.new-chat-btn:hover {
+    color: var(--primary-color);
+}
+
+.new-chat-btn:focus {
+    outline: none;
+    color: var(--primary-color);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .main-content {
@@ -745,6 +865,101 @@ details[open] .suggested-header::before {
     .sidebar {
         width: 280px;
     }
+}
+
+/* ── Image Attach Button ─────────────────────────── */
+
+#attachButton {
+    padding: 0.75rem;
+    background: var(--surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+}
+
+#attachButton:hover:not(:disabled) {
+    background: var(--surface-hover);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+#attachButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+#attachButton.has-image {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+#attachButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Image Preview (above input) ─────────────────── */
+
+.image-preview-container {
+    padding: 0.75rem 2rem 0;
+}
+
+.image-preview-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+#imagePreview {
+    max-height: 120px;
+    max-width: 200px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    object-fit: cover;
+    display: block;
+}
+
+.image-remove-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+.image-remove-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #f87171;
+    color: #f87171;
+}
+
+/* ── Image in Chat Messages ──────────────────────── */
+
+.chat-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    display: block;
+    object-fit: contain;
 }
 
 /* ── Theme Toggle Button ─────────────────────────── */

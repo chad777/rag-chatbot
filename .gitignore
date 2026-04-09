@@ -13,6 +13,10 @@ __pycache__/
 venv/
 env/
 ENV/
+.venv/
+
+# Git worktrees
+.trees/
 
 # ChromaDB
 backend/chroma_db/
