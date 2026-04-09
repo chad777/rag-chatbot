@@ -1,5 +1,65 @@
 # Frontend Changes
 
+## Sources Panel Redesign
+
+### Summary
+Replaced the cramped comma-separated source links with a clean list — one pill per source, each with an icon, on its own line.
+
+### Files Modified
+
+#### `frontend/script.js`
+- Sources are now rendered as `<ul class="sources-list">` with one `<li class="source-item">` per entry
+- Each linked source gets an external-link SVG icon; plain-text sources get a document icon
+- The `<summary>` now includes a chevron SVG (rotates on open) and a count badge showing the number of sources
+
+#### `frontend/style.css`
+- `.sources-collapsible summary` — flex row with chevron, label, and count badge; uppercase/tracked label style
+- `.sources-chevron` — rotates 90° when `[open]` via CSS transition
+- `.sources-count` — pill badge showing source count
+- `.sources-list` — vertical flex column, 0.35 rem gap between items
+- `.source-item a` — bordered pill with hover highlight (`--surface-hover` + primary border), primary-coloured text
+- `.source-icon` — 13 px inline SVG, slightly muted opacity
+
+---
+
+## Image Upload in Chat
+
+### Summary
+Added the ability to attach an image to any chat message. The image is sent to Claude alongside the text query, enabling visual question answering.
+
+### How it works
+1. Click the paperclip button in the input bar to open the file picker (images only)
+2. A thumbnail preview appears above the input with a ✕ button to remove it
+3. Type an optional message and hit Send — the image and text are sent together
+4. The image appears in the chat bubble, followed by the text
+
+### Files Modified
+
+#### `frontend/index.html`
+- Added `<input type="file" id="imageInput" accept="image/*" style="display:none">` — hidden file picker
+- Added `<button id="attachButton">` with a paperclip SVG icon, placed before the text input
+- Added `.image-preview-container` with a thumbnail `<img id="imagePreview">` and a `<button class="image-remove-btn">` — shown/hidden via JS
+
+#### `frontend/script.js`
+- Added `selectedImageData` and `selectedImageMediaType` global state variables
+- `handleImageSelect(e)` — reads the selected file with `FileReader`, stores raw base64 (strips the data-URL prefix), shows the preview
+- `clearSelectedImage()` — resets state and hides the preview
+- `sendMessage()` updated to: capture image before clearing UI, pass `imageSrc` to `addMessage()`, include `image_data` and `image_media_type` in the API request body
+- `addMessage()` updated to accept optional `imageSrc` parameter and render `<img class="chat-image">` inside the message bubble when present
+
+#### `frontend/style.css`
+- `#attachButton` — circular button matching the send button's dimensions, with hover/focus styles and a `.has-image` active state
+- `.image-preview-container` / `.image-preview-wrapper` / `#imagePreview` — thumbnail area above the input, max 120 px tall
+- `.image-remove-btn` — small circular ✕ button overlaid on the thumbnail corner
+- `.chat-image` — images inside chat bubbles, capped at 300 px tall, rounded corners
+
+#### `backend/app.py`, `backend/rag_system.py`, `backend/ai_generator.py`
+- `QueryRequest` extended with optional `image_data` (base64 string) and `image_media_type` fields
+- `rag_system.query()` and `ai_generator.generate_response()` updated to thread image data through to the Claude API call
+- When an image is present, the user message content is built as a list `[image_block, text_block]` per the Anthropic vision API format
+
+---
+
 ## Theme Toggle Button
 
 ### Summary

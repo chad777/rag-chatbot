@@ -39,6 +39,8 @@ class QueryRequest(BaseModel):
     """Request model for course queries"""
     query: str
     session_id: Optional[str] = None
+    image_data: Optional[str] = None
+    image_media_type: Optional[str] = None
 
 class QueryResponse(BaseModel):
     """Response model for course queries"""
@@ -63,7 +65,11 @@ async def query_documents(request: QueryRequest):
             session_id = rag_system.session_manager.create_session()
         
         # Process query using RAG system
-        answer, sources = rag_system.query(request.query, session_id)
+        answer, sources = rag_system.query(
+            request.query, session_id,
+            image_data=request.image_data,
+            image_media_type=request.image_media_type
+        )
         
         return QueryResponse(
             answer=answer,
@@ -72,6 +78,12 @@ async def query_documents(request: QueryRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/session/{session_id}")
+async def delete_session(session_id: str):
+    """Clear a session's conversation history"""
+    rag_system.session_manager.clear_session(session_id)
+    return {"status": "cleared"}
 
 @app.get("/api/courses", response_model=CourseStats)
 async def get_course_stats():
